@@ -1,0 +1,115 @@
+\usepackage[utf8]{inputenc}
+\usepackage[keep-semicolon]{alphabeta}
+\usepackage{float}
+\usepackage[Bjarne]{fncychap}
+\usepackage{ftnxtra}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{subfiles}
+\usepackage{fancyhdr}
+\usepackage{multicol}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{array}
+\usepackage{tabto}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{trees, matrix, fit}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage[bottom]{footmisc}
+\usepackage{emptypage}
+\usepackage{geometry}
+%% change the size of the page and left and top blank space
+\geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+}
+
+%% hyperreference setup
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    citecolor=RoyalBlue,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=RoyalBlue,
+    linktoc=page
+} 
+
+
+% %% leaves a blank page so that the new chapter begins at an odd page number
+% \usepackage{afterpage}
+
+% \newcommand\blankpage{%
+%     \null
+%     \thispagestyle{empty}%
+%     \addtocounter{page}{-1}%
+%     \newpage}
+
+%% bibliography packages
+\usepackage[square, numbers, sort&compress]{natbib}
+\bibliographystyle{dinat}
+
+
+% \usepackage{xpatch}
+% \makeatletter
+% \xpatchcmd{\@chapter}{%
+%   \refstepcounter{chapter}%
+% }{%
+%   \ifnum\value{chapter} = 0
+%   \refstepcounter{chapter}%
+%   \else
+%   \addtocounter{chapter}{1}%
+%   \refstepcounter{chapter}%
+%   \fi
+% }{}{}
+% \makeatother
+% %%
+
+\usepackage[ddmmyyyy]{datetime}
+\renewcommand{\dateseparator}{.}
+
+% %% chapter-section formatting
+% \usepackage{titlesec}
+% \titleformat
+% {\chapter} % command
+% [hang] % shape
+% {\huge} % format
+% {} % label
+% {1ex}{}
+% \titleformat{\bibliography}[hang]{\Large}{}{0pt}{}
+% \titleformat{\section}[hang]{
+% \Large}{}{0pt}{}
+% \titleformat{\subsection}[hang]{
+% \Large}{}{0pt}{}
+% \titleformat{\subsubsection}[hang]{
+% \large}{}{0pt}{}
+
+
+\ChNameAsIs
+\ChTitleAsIs
+
+
+\newcommand{\detailtexcount}[1]{%
+  \immediate\write18{texcount -merge -sum -q #1.tex output.bbl > #1.wcdetail }%
+  \verbatiminput{#1.wcdetail}%
+}
+
+\newcommand{\quickwordcount}[1]{%
+  \immediate\write18{texcount -1 -sum -merge -q #1.tex output.bbl > #1-words.sum }%
+  \input{#1-words.sum} words%
+}
+
+\newcommand{\quickcharcount}[1]{%
+  \immediate\write18{texcount -1 -sum -merge -char -q #1.tex output.bbl > #1-chars.sum }%
+  \input{#1-chars.sum} characters (not including spaces)%
+}
+
+\usepackage{cleveref}

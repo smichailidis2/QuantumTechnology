@@ -1,0 +1,137 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+
+
+\begin{document}
+\chapter{Implementing Quantum Gates in the Ion Trap Model}
+
+\tab In this chapter, we are going to analyze the way gate operations can be performed in the ion trap configuration. Single qubit gates can be implemented by performing arbitrary phase transitions through external driving, while two qubit gates can be performed by coupling 
+qubits to a harmonic oscillator. 
+
+\section{Single Qubit Gates}
+
+\subsection{Optical Qubit}
+The qubit in a trapped ion quantum computer encoded through the difference in the electronic energy levels. Basically, a two level system (Hydrogen atom) having two energy levels. Which orbitals (permitted states) are used to encode information depends on the element. The optimal orbitals used depend on the lifetime of the excited state (time before decoherance) and the energy (laser frequency) needed to drive the system to those states.
+Logic gates are usually implemented by driving it into resonance with a laser. This causes Rabi oscillations, making gate logic possible.
+\par
+In the ion trap configuration, we can perform phase transitions through the means of stimulated Raman transitions. By manipulating the frequency of an external electromagnetic field and exposing the ions to the field for specific amounts of time, we are able to perform arbitrary qubit rotations. The following operator, describes this arbitrary rotation on a qubit, and in this case $\phi$ is the external drive phase and $\theta$ is the drive time ($\Omega t$), $\Omega$ being the Rabi frequency.
+
+\begin{equation}
+    R(\theta, \phi) = \begin{pmatrix}
+        \cos{\theta/2} &ie^{i\phi}\sin{\theta/2}\\
+        ie^{-i\phi}\sin{\theta/2} &\cos{\theta/2}
+    \end{pmatrix}
+\end{equation}
+
+
+\section{The Cirac-Zoller Gate}
+Cirac and Zoller, in their seminal paper \cite{PhysRevLett.74.4091}, specified the operations necessary to implement a universal phase gate. In this section, we are going to describe the process of implementing the controlled phase gate $\hat{U}_{ROT}$. It is noted that by adding appropriate rotations to either control or the target qubit respectively, the CNOT gate can be implemented. In order to understand how to perform the Cirac-Zoller gate, it is relevant that we explain the center of mass mode (CM) of the trapped ions in a linear trap. Appropriate stimulation with a laser beam in the $z$-direction of an ion in the ion trap creates vibrational motion in which the ion lattice oscillates uniformly. For the CM motion, the interaction Hamiltonian coupling the internal qubit states of each ion (j = 1,\ldots, N) to the CM motion can be written as:
+
+\begin{equation}
+    \hat{H}_j = \frac{i\hbar\eta\Omega}{\sqrt{N}}e^{i\phi}\sigma_{j}^+ \otimes a + h.c.
+\end{equation}
+
+\noindent where $h.c.$ denotes the Hermitian conjugate of the first operator. $a^\dagger$ and $a$ are the creation and annihilation operators of the CM phonons, respectively, $\Omega$ is the Rabi frequency, $\phi$ is the laser phase, and $\eta = [\hbar k_\theta^2 / (2M\nu_x)]^{1/2}$ is the Lamb-Dicke Limit (LDL). 
+
+The action of the interaction Hamiltonian on the state $\ket{0}_j\ket{k+1}_{CM}$ is:
+\begin{equation}
+    \begin{split}
+        H_j\ket{0}_j\ket{k+1}_{CM} &= \frac{\hbar\eta\Omega}{\sqrt{N}}\left[\ket{1}_j\bra{0}\ket{0}_je^{-i\phi}\otimes a\ket{k+1}_{CM} + \ket{0}_j\bra{1}\ket{0}_je^{i\phi}\otimes a^\dagger\ket{k+1}_{CM}\right]\\
+        &= \frac{\hbar\eta\Omega}{\sqrt{N}}e^{-i\phi}\sqrt{k+1}\ket{1}_j\ket{k}_{CM}
+    \end{split}
+\end{equation}
+
+\noindent and similarly:
+\begin{equation}
+    \begin{split}
+        H_j\ket{1}_j\ket{k}_{CM} &= \frac{\hbar\eta\Omega}{\sqrt{N}}\left[\ket{1}_j\bra{0}\ket{1}_je^{-i\phi}\otimes a\ket{k}_{CM} + \ket{0}_j\bra{1}\ket{1}_je^{i\phi}\otimes a^\dagger\ket{k}_{CM}\right]\\
+        &= \frac{\hbar\eta\Omega}{\sqrt{N}}e^{i\phi}\sqrt{k+1}\ket{0}_j\ket{k+1}_{CM}
+    \end{split}
+\end{equation}
+
+
+\noindent And the unitary evolution of the Hamiltonian is:
+
+\begin{equation}
+    \hat{U}_j(t) = \exp{-i\hat{H}_j t/\hbar}
+\end{equation}
+
+The interaction Hamiltonian, with respect to the ordered basis $\{\ket{0}_j\ket{k+1}_{CM}, \ket{1}_j\ket{k}_{CM}\}$, $H_{j,k}$ admits the following matrix representation:
+\begin{equation}
+    H_{j,k} = \hbar\eta\Omega\sqrt{\frac{k+1}{N}}\begin{pmatrix}
+        0 & e^{-i\phi}\\
+        e^{i\phi} & 0
+    \end{pmatrix}
+\end{equation}
+
+\noindent Thus, its time evolution operator is given by:
+
+\begin{equation}
+    U_{j,k}(t,\phi) = e^{-iH_j t/\hbar} = \begin{pmatrix}
+         \cos{\mathcal{E}_k t} &ie^{i\phi}\sin{\mathcal{E}_k t}\\
+        ie^{-i\phi}\sin{\mathcal{E}_k t} &\cos{\mathcal{E}_k t}
+    \end{pmatrix}, \; \mathcal{E}_k = \hbar\eta\Omega\sqrt{\frac{k+1}{N}}
+\end{equation}
+
+\noindent Using the CM mode as the bus, we can realize the 2-bit quantum phase gate as follows. First, a qubit in logic state $\ket{1}$ is excited into a superposition of logic states $\ket{1}$ and $\ket{0}$, while remaining in motional state $\ket{1}_{CM}$, Then, the $\ket{1}\ket{1}_{CM}$ state is excited through an internal auxiliary and back by a 2$\pi$ pulse, changing the sign of the wave function. Finally, the superposition is recombined by a rotation to the qubit state $\ket{0}\ket{1}_{CM}$. These steps are expressed below:
+
+\begin{equation}
+    U \equiv U_1(3T,0)U_2^{aux}(2T,0)U_1(T,0),\; T \equiv \frac{\pi}{2\eta\Omega}\sqrt{N}
+    \label{eq: CROT}
+\end{equation}
+
+We can verify for each state: 
+
+\begin{equation}
+    \begin{split}
+        U\ket{0}_1\ket{0}_2\ket{0}_{CM} &=  U_1(3T,0)U_2^{aux}(2T,0)U_1(T,0)\ket{0}_1\ket{0}_2\ket{0}_{CM}\\
+        &= U_1(3T,0)U_2^{aux}(2T,0)U_1(T,0)[\ket{0}_1\ket{0}_{CM}]\ket{0}_2\\
+        &= U_1(3T,0)U_2^{aux}(2T,0)[\ket{0}_1\ket{0}_{CM}]\ket{0}_2\\
+        &= U_1(3T,0)U_2^{aux}(2T,0)[\ket{0}_2\ket{0}_{CM}]\ket{0}_1\\
+        &= U_1(3T,0)[\ket{0}_1\ket{0}_{CM}]\ket{0}_2\\
+        &= \ket{0}_1\ket{0}_{CM}\ket{0}_2\\
+        &= \ket{0}_1\ket{0}_2\ket{0}_{CM}
+    \end{split}
+\end{equation}
+
+\begin{equation}
+    \begin{split}
+        U\ket{0}_1\ket{1}_2\ket{0}_{CM} &=  U_1(3T,0)U_2^{aux}(2T,0)U_1(T,0)\ket{0}_1\ket{1}_2\ket{0}_{CM}\\
+        &= U_1(3T,0)U_2^{aux}(2T,0)U_1(T,0)[\ket{0}_1\ket{0}_{CM}]\ket{1}_2\\
+        &= U_1(3T,0)U_2^{aux}(2T,0)[\ket{0}_1\ket{0}_{CM}]\ket{1}_2\\
+        &= U_1(3T,0)U_2^{aux}(2T,0)[\ket{1}_2\ket{0}_{CM}]\ket{0}_1\\
+        &= U_1(3T,0)[\ket{0}_1\ket{0}_{CM}]\ket{1}_2\\
+        &= \ket{0}_1\ket{0}_{CM}\ket{1}_2\\
+        &= \ket{0}_1\ket{1}_2\ket{0}_{CM}
+    \end{split}
+\end{equation}
+
+\begin{equation}
+    \begin{split}
+        U\ket{1}_1\ket{0}_2\ket{0}_{CM} &=  U_1(3T,0)U_2^{aux}(2T,0)U_1(T,0)\ket{1}_1\ket{0}_2\ket{0}_{CM}\\
+        &= U_1(3T,0)U_2^{aux}(2T,0)U_1(T,0)[\ket{1}_1\ket{0}_{CM}]\ket{0}_2\\
+        &= U_1(3T,0)U_2^{aux}(2T,0)[-i\ket{0}_1\ket{1}_{CM}]\ket{0}_2\\
+        &= -iU_1(3T,0)U_2^{aux}(2T,0)[\ket{0}_2\ket{1}_{CM}]\ket{0}_1\\
+        &= -iU_1(3T,0)[\ket{0}_1\ket{1}_{CM}]\ket{0}_2\\
+        &= (-i)i\ket{1}_1\ket{0}_{CM}\ket{0}_2\\
+        &= \ket{1}_1\ket{0}_{CM}\ket{0}_2\\
+        &= \ket{1}_1\ket{0}_2\ket{0}_{CM}
+    \end{split}
+\end{equation}
+
+\begin{equation}
+    \begin{split}
+        U\ket{1}_1\ket{1}_2\ket{0}_{CM} &=  U_1(3T,0)U_2^{aux}(2T,0)U_1(T,0)\ket{1}_1\ket{1}_2\ket{0}_{CM}\\
+        &= U_1(3T,0)U_2^{aux}(2T,0)U_1(T,0)[\ket{1}_1\ket{0}_{CM}]\ket{1}_2\\
+        &= U_1(3T,0)U_2^{aux}(2T,0)[-i\ket{0}_1\ket{1}_{CM}]\ket{1}_2\\
+        &= -iU_1(3T,0)U_2^{aux}(2T,0)[\ket{1}_2\ket{1}_{CM}]\ket{0}_1\\
+        &= iU_1(3T,0)[\ket{0}_1\ket{1}_{CM}]\ket{1}_2\\
+        &= i\cdot i\ket{1}_1\ket{0}_{CM}\ket{1}_2\\
+        &= -\ket{1}_1\ket{0}_{CM}\ket{1}_2\\
+        &= -\ket{1}_1\ket{1}_2\ket{0}_{CM}
+    \end{split}
+\end{equation}
+
+\noindent We can observe that the \cref{eq: CROT} makes for a successful Controlled Phase gate. We can construct the Controlled NOT gate by performing two Hadamard operations on the target qubit, one before applying the Controlled Phase gate and one after. 
+
+\end{document}

@@ -1,0 +1,62 @@
+\documentclass[11pt, a4paper, twoside, table, tbtags]{report}
+\input{packages.tex}
+\usepackage{physics}
+
+
+%% fancy pages
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE, RO]{\thepage}
+\fancyhead[RE]{Ion Trap Quantum Computation}
+\fancyhead[LO]{\nouppercase{\leftmark}}
+
+
+\setlength{\headheight}{13.59999pt}
+
+%% line at top and bottom of the page change width
+\renewcommand{\headrulewidth}{0.75pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\title{
+\begin{figure}[t!]
+    \centering
+    \includegraphics[scale = 0.8]{images/logo_TUC.png}
+\end{figure}
+
+\huge{Ion Trap Quantum Computation}\\
+\vspace{10mm}
+\Large{Quantum Technology}\\
+\vspace{5mm}
+\small{School of Electrical and Computer Engineering}\\
+\vspace{15mm}
+}
+
+\author{Rouli Daniel - 2018030019\and Michailidis Stergios - 2020030080 \and Moustakas Ioannis - 202030120
+\vspace{35mm}}
+
+\date{July, 2023}
+
+
+\newcommand{\rf}{\Omega_{\text{rf}}}
+
+\begin{document}
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+
+\maketitle
+\tableofcontents
+
+\newpage
+\subfile{sections/Introduction}
+
+\newpage
+\subfile{sections/Hamiltonian}
+
+\newpage
+\subfile{sections/gate implementation}
+
+\bibliography{refs}
+
+
+\end{document}
